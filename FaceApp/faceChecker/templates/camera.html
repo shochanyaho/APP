@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>カメラ起動</title>
+</head>
+<body>
+    <h1>カメラで写真を撮る</h1>
+    <button id="captureBtn">撮影</button>
+    <button id="reloadBtn" style="display:none; margin-top:10px;">再撮影</button>
+    <img id="capturedImage" style="display:none; width:300px;">
+    
+
+    <script>
+        document.getElementById("captureBtn").addEventListener("click", function() {
+            fetch("/capture/")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.image_url) {
+                        const timestamp = new Date().getTime();
+                        document.getElementById("capturedImage").src = data.image_url + "?t=" + timestamp;
+                        document.getElementById("capturedImage").style.display = "block";
+                    } 
+                    if (data.message) {
+                        alert(data.message); // サーバーのメッセージをアラートで表示
+                    }
+                    document.getElementById("reloadBtn").style.display = "block";
+                    document.getElementById("captureBtn").style.display = "none";
+                });
+        });
+
+        // リロードボタンを押したらページをリフレッシュ
+        document.getElementById("reloadBtn").addEventListener("click", function() {
+            location.reload();
+        });
+    </script>
+</body>
+</html>
