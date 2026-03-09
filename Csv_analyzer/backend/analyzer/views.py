@@ -26,7 +26,7 @@ def upload_csv(request):
         
         except Exception as e:
             return JsonResponse({"error": f"CSVの読み込みに失敗: {str(e)}"}, status=400)
-    
+        
     return JsonResponse({"error": "ファイルが送信されていません"}, status=400)
 
 

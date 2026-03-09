@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>出勤チェック</title>
+</head>
+
+<body>
+
+<h2>位置情報テスト</h2>
+
+<button onclick="getLocation()">位置情報を取得</button> <button onclick="openMap()">マップに表示</button>
+
+<p id="result"></p>
+
+<script>
+
+let latitude = null;
+let longitude = null;
+
+// 会社の位置
+const officeLat = 35.20972388227099;
+const officeLon = 137.0141968158623;
+
+function getLocation() {
+
+    if (!navigator.geolocation) {
+        document.getElementById("result").textContent = "位置情報に対応していません";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+
+            const distance = getDistance(latitude, longitude, officeLat, officeLon);
+
+            if(distance <= 100){
+                const now = new Date().toLocaleString();
+                document.getElementById("result").textContent =
+                    now + " 出勤完了";
+            }else{
+                document.getElementById("result").textContent =
+                    "会社から " + Math.round(distance) + "m 離れています";
+            }
+
+        },
+        function(error) {
+            document.getElementById("result").textContent =
+                "位置情報を取得できませんでした";
+        }
+    );
+}
+
+function openMap(){
+
+    if(latitude == null){
+        alert("先に位置情報を取得してください");
+        return;
+    }
+
+    const url = "https://www.google.com/maps?q=" + latitude + "," + longitude;
+
+    window.open(url, "_blank");
+}
+
+
+// 距離計算（メートル）
+function getDistance(lat1, lon1, lat2, lon2) {
+
+    const R = 6371000;
+
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+
+    const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI/180) *
+        Math.cos(lat2 * Math.PI/180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+}
+
+</script>
+
+</body>
+</html>
